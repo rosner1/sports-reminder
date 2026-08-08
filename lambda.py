@@ -1,5 +1,6 @@
 import os
 import requests
+import boto3
 
 WNBA_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard'
 NBA_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
@@ -23,7 +24,7 @@ def find_close_games():
             for competitor in competition["competitors"]:
                 team = competitor["team"]
 
-                if team['id'] == os.getenv('WNBA_ID'):
+                if (url == WNBA_URL and team['id'] == os.getenv('WNBA_ID')) or (url == NBA_URL and team['id'] == os.getenv('NBA_ID')):
                     print("Hell yea")
                     scores = []
                     for competitor in competition['competitors']:
