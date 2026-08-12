@@ -5,6 +5,8 @@ import boto3
 WNBA_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard'
 NBA_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
 URLS = [WNBA_URL, NBA_URL]
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table(os.environ["TABLE_NAME"])
 
 def clock_to_seconds(clock):
     minutes, seconds = clock.split(":")
@@ -19,7 +21,17 @@ def find_close_games():
         res = res.json()
 
         for event in res["events"]:
+            res = table.get_item(
+                Key={
+                    "notificationId": event["id"]
+                }
+            )
+            if "Item" in res:
+                continue
+                
+
             competition = event["competitions"][0]
+
 
             for competitor in competition["competitors"]:
                 team = competitor["team"]
@@ -50,6 +62,11 @@ def send_text():
 
 def save_game(id):
     '''Save event id to db to prevent multiple texts'''
+    table.put_item(
+        Item={
+            "notificationId": id
+        }
+    )
     pass
 
 find_close_games()
