@@ -17,13 +17,12 @@ def find_close_games():
 
     for url in URLS:
         res = requests.get(url)
-        print(res.status_code)
         res = res.json()
 
         for event in res["events"]:
             res = table.get_item(
                 Key={
-                    "notificationId": event["id"]
+                    "eventId": event["id"]
                 }
             )
             if "Item" in res:
@@ -53,6 +52,8 @@ def find_close_games():
                     if status_type['name'] != "STATUS_FINAL" and period >= 3 and float(remaining_seconds) <= 300 and scoreDif <= 15:
                         print("CLOSE GAME for chosen team")
 
+
+
                     send_text()
                     save_game(event["id"])
 
@@ -64,7 +65,7 @@ def save_game(id):
     '''Save event id to db to prevent multiple texts'''
     table.put_item(
         Item={
-            "notificationId": id
+            "eventId": id
         }
     )
     pass
