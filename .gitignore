@@ -247,3 +247,7 @@ override.tf.json
 
 # Ignore CLI plan outputs (may contain unencrypted secrets)
 *.tfplan
+
+# Lambda build artifacts
+lambda.zip
+lambda_package/

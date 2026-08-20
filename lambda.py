@@ -64,7 +64,6 @@ def send_text(team):
         PhoneNumber=os.environ["PHONE_NUMBER"],
         Message= f"The {team} are in a close game!",
     )
-    pass
 
 def save_game(id):
     '''Save event id to db to prevent multiple texts'''
@@ -73,6 +72,6 @@ def save_game(id):
             "eventId": id
         }
     )
-    pass
 
-find_close_games()
+def lambda_handler(event, context):
+    find_close_games()
