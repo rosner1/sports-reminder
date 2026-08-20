@@ -5,8 +5,10 @@ import boto3
 WNBA_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard'
 NBA_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
 URLS = [WNBA_URL, NBA_URL]
+
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["TABLE_NAME"])
+sns = boto3.client("sns")
 
 def clock_to_seconds(clock):
     minutes, seconds = clock.split(":")
@@ -53,12 +55,15 @@ def find_close_games():
                         print("CLOSE GAME for chosen team")
 
 
-
-                    send_text()
+                    send_text(team["displayName"])
                     save_game(event["id"])
 
-def send_text():
+def send_text(team):
     '''Send text message to phone save in env var'''
+    sns.publish(
+        PhoneNumber=os.environ["PHONE_NUMBER"],
+        Message= f"The {team} are in a close game!",
+    )
     pass
 
 def save_game(id):
