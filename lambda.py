@@ -11,6 +11,9 @@ table = dynamodb.Table(os.environ["TABLE_NAME"])
 sns = boto3.client("sns")
 
 def clock_to_seconds(clock):
+    if not clock or ":" not in clock:
+        return 0
+
     minutes, seconds = clock.split(":")
     return int(minutes) * 60 + int(seconds)
 
