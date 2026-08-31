@@ -61,7 +61,7 @@ def find_close_games():
                         save_game(event["id"])
 
 def send_email(team):
-    '''Send text message to phone save in env var'''
+    '''Send email to yourself from env var'''
     print("Send text")
     response = ses.send_email(
         Source=os.environ["EMAIL_ADDRESS"],
@@ -74,12 +74,12 @@ def send_email(team):
             },
             "Body": {
                 "Text": {
-                    "Data": f"The {team} are in a close game!"
+                    "Data": f"The {team} are in a close gme!"
                 }
             }
         }
     )
-    print(f"SNS response: {response}")
+    print(f"SES response: {response}")
 
 def save_game(id):
     '''Save event id to db to prevent multiple texts'''
