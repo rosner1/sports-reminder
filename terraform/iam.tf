@@ -13,7 +13,7 @@ resource "aws_iam_role" "lambda_role" {
     })
 }
 
-resource "aws_iam_role_policy" "lambda_sns_policy" {
+resource "aws_iam_role_policy" "lambda_ses_policy" {
   role = aws_iam_role.lambda_role.id
 
   policy = jsonencode({
@@ -22,7 +22,7 @@ resource "aws_iam_role_policy" "lambda_sns_policy" {
     Statement = [{
       Effect = "Allow"
       Action = [
-        "sns:Publish"
+        "ses:SendEmail"
       ]
       Resource = "*"
     }]

@@ -8,7 +8,7 @@ URLS = [WNBA_URL, NBA_URL]
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["TABLE_NAME"])
-sns = boto3.client("sns")
+ses = boto3.client("ses", region_name="us-east-2")
 
 def clock_to_seconds(clock):
     if not clock or ":" not in clock:
@@ -19,6 +19,7 @@ def clock_to_seconds(clock):
 
 def find_close_games():
     '''Finds close games for given wnba and nba team'''
+    print("made it here")
 
     for url in URLS:
         res = requests.get(url)
@@ -41,6 +42,8 @@ def find_close_games():
                 team = competitor["team"]
 
                 if (url == WNBA_URL and team['id'] == os.getenv('WNBA_ID')) or (url == NBA_URL and team['id'] == os.getenv('NBA_ID')):
+                    print("Correct team")
+                    send_email(team["displayName"])
                     scores = []
                     for competitor in competition['competitors']:
                         scores.append(competitor['score'])
@@ -53,15 +56,30 @@ def find_close_games():
                     status_type = status['type']
 
                     if status_type['name'] != "STATUS_FINAL" and period > 3 and float(remaining_seconds) <= 300 and scoreDif <= 6:
-                        send_text(team["displayName"])
+                        print("Close game")
+                        send_email(team["displayName"])
                         save_game(event["id"])
 
-def send_text(team):
+def send_email(team):
     '''Send text message to phone save in env var'''
-    sns.publish(
-        PhoneNumber=os.environ["PHONE_NUMBER"],
-        Message= f"The {team} are in a close game!",
+    print("Send text")
+    response = ses.send_email(
+        Source=os.environ["EMAIL_ADDRESS"],
+        Destination={
+            "ToAddresses": [os.environ["EMAIL_ADDRESS"]]
+        },
+        Message={
+            "Subject": {
+                "Data": f"{team} Close Game"
+            },
+            "Body": {
+                "Text": {
+                    "Data": f"The {team} are in a close game!"
+                }
+            }
+        }
     )
+    print(f"SNS response: {response}")
 
 def save_game(id):
     '''Save event id to db to prevent multiple texts'''

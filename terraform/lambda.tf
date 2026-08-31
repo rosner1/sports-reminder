@@ -19,7 +19,7 @@ resource "aws_lambda_function" "score_checker" {
     environment {
         variables = {
             TABLE_NAME = aws_dynamodb_table.notifications.name,
-            PHONE_NUMBER = var.phone_number,
+            EMAIL_ADDRESS = var.email_address,
             WNBA_ID = 5,
             NBA_ID = 11
         }
