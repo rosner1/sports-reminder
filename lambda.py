@@ -19,7 +19,6 @@ def clock_to_seconds(clock):
 
 def find_close_games():
     '''Finds close games for given wnba and nba team'''
-    print("made it here")
 
     for url in URLS:
         res = requests.get(url)
@@ -42,8 +41,6 @@ def find_close_games():
                 team = competitor["team"]
 
                 if (url == WNBA_URL and team['id'] == os.getenv('WNBA_ID')) or (url == NBA_URL and team['id'] == os.getenv('NBA_ID')):
-                    print("Correct team")
-                    send_email(team["displayName"])
                     scores = []
                     for competitor in competition['competitors']:
                         scores.append(competitor['score'])
@@ -56,13 +53,11 @@ def find_close_games():
                     status_type = status['type']
 
                     if status_type['name'] != "STATUS_FINAL" and period > 3 and float(remaining_seconds) <= 300 and scoreDif <= 6:
-                        print("Close game")
                         send_email(team["displayName"])
                         save_game(event["id"])
 
 def send_email(team):
     '''Send email to yourself from env var'''
-    print("Send text")
     response = ses.send_email(
         Source=os.environ["EMAIL_ADDRESS"],
         Destination={
@@ -79,7 +74,6 @@ def send_email(team):
             }
         }
     )
-    print(f"SES response: {response}")
 
 def save_game(id):
     '''Save event id to db to prevent multiple texts'''
