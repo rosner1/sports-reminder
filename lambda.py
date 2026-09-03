@@ -22,6 +22,12 @@ def find_close_games():
 
     for url in URLS:
         res = requests.get(url)
+
+        print(f"URL: {url}")
+        print(f"Status code: {res.status_code}")
+        print(f"Response: {res.text[:500]}")
+
+        res.raise_for_status()
         res = res.json()
 
         for event in res["events"]:
